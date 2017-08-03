@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command: nodemon -L --exitcrash --inspect=0.0.0.0:5858
+    restart: always
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+      - "5858:5858"
+    environment:
+      - AUTH_TOKEN=test
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - LOG_LEVEL=debug
+      - INITIAL_GIT_REPO_URL=https://github.com/BanditSoftware/ops-puppet.git
+

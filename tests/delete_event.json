@@ -1,0 +1,13 @@
+{
+  "ref": "refs/heads/e4_rancher",
+  "deleted": true,
+  "forced": false,
+  "base_ref": null,
+
+  "repository": {
+    "git_url": "git://github.com/BanditSoftware/ops-puppet.git",
+    "ssh_url": "git@github.com:BanditSoftware/ops-puppet.git",
+    "clone_url": "https://github.com/BanditSoftware/ops-puppet.git",
+    "svn_url": "https://github.com/BanditSoftware/ops-puppet"
+  }
+}
