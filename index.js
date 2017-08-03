@@ -10,7 +10,7 @@ const fs = require('fs')
 log.cli()
 log.level = process.env.LOG_LEVEL || 'info'
 
-const puppetPath = '/code/environments'
+const puppetPath = '/etc/puppetlabs/code/environments'
 const authToken = process.env.AUTH_TOKEN
 const githubToken = process.env.GITHUB_TOKEN
 const initialGitBranch = process.env.INITIAL_GIT_BRANCH || 'production'
@@ -60,9 +60,7 @@ const deleteBranch = function deleteBranch(git) {
       exec(`rm -rf ${git.path}`)
         .then(() => {
           log.debug('Delete Successful')
-          resolve({
-            message: `${git.branch} Delete Successful`,
-          })
+          resolve(git)
         })
         .catch((err) => {
           log.debug(`Failed to Delete ${git.path} - ${err}`)
@@ -112,43 +110,17 @@ const gitCheckout = function gitCheckout(git) {
     })
 }
 
-const gitPull = function gitPull(git) {
-  return new Promise(
-    (resolve, reject) => {
-      chdir(git.path, () => {
-        exec('git pull')
-          .then(() => {
-            log.debug('Git Pull Successful')
-            resolve(`Git Pull of ${git.branch} Successful`)
-          })
-          .catch((err) => {
-            log.debug(`Failed to Pull ${git.branch} ${git.path} - ${err}`)
-            reject({
-              status: 500,
-              message: `Failed to Pull ${git.branch}`,
-            })
-          })
-      })
-    })
-}
-
 const initialClone = function initialClone(git) {
   return new Promise(
     (resolve, reject) => {
-      if (fs.existsSync(git.path)) {
-        log.debug(`${git.path} exists - Pull`)
+      log.debug(`${git.path} Delete, Clone and Checkout`)
 
-        gitPull(git)
-          .then((message) => { resolve(message) })
-          .catch((err) => { reject(err) })
-      } else {
-        log.debug(`${git.path} does not exist - Clone and Checkout`)
-
-        gitClone(git)
-          .then(gitCheckout)
-          .then((message) => { resolve(message) })
-          .catch((err) => { reject(err) })
-      }
+      deleteBranch(git)
+        .then(gitClone)
+        .then(gitCheckout)
+        .then((message) => { resolve(message) })
+        .catch((err) => { reject(err) })
+      // }
     })
 }
 
@@ -177,16 +149,10 @@ const parseHook = function parseHook(req) {
           deleteBranch(git)
             .then((message) => { resolve(message) })
             .catch((err) => { reject(err) })
-        } else if (fs.existsSync(git.path)) {
-          log.debug(`${git.path} exists - Pull`)
-
-          gitPull(git)
-            .then((message) => { resolve(message) })
-            .catch((err) => { reject(err) })
         } else {
-          log.debug(`${git.path} does not exist - Clone and Checkout`)
-
-          gitClone(git)
+          log.debug(`${git.path} Delete, Clone and Checkout`)
+          deleteBranch(git)
+            .then(gitClone)
             .then(gitCheckout)
             .then((message) => { resolve(message) })
             .catch((err) => { reject(err) })

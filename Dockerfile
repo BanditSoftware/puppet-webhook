@@ -12,4 +12,6 @@ RUN npm install && \
 
 COPY . /app
 
+VOLUME /etc/puppetlabs/code
+
 CMD ["node", "./index.js"]
