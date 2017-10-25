@@ -1,5 +1,7 @@
 # puppet-webhook
 
+https://hub.docker.com/r/jgreat/puppet-webhook/
+
 Simple service in a docker container to receive GitHub webhooks to update puppet environments.
 
 Each branch gets cloned as a Puppet Environment. When namimg branches you need to use Underscores as a seperator. Dashes are not valid in Puppet Environment names.
